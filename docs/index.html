@@ -52,6 +52,7 @@
       const renderButton = document.getElementById("render");
       const clearButton = document.getElementById("clear");
       const copyButton = document.getElementById("copy");
+      const renderedCodeStorageKey = "mermaid-viewer:rendered-code";
       let clickMessages = {};
 
       const parseClickMessages = (code) => {
@@ -68,7 +69,12 @@
         messageBox.textContent = description;
       };
 
-      editor.value = sample;
+      const getStoredCode = () => {
+        const storedCode = window.sessionStorage.getItem(renderedCodeStorageKey);
+        return storedCode && storedCode.trim() ? storedCode : sample;
+      };
+
+      editor.value = getStoredCode();
 
       const render = async () => {
         errorBox.textContent = "";
@@ -90,6 +96,7 @@
           if (bindFunctions) {
             bindFunctions(preview);
           }
+          window.sessionStorage.setItem(renderedCodeStorageKey, code);
         } catch (error) {
           preview.innerHTML = "";
           errorBox.textContent = error instanceof Error ? error.message : String(error);
@@ -103,6 +110,7 @@
         preview.innerHTML = "";
         errorBox.textContent = "";
         messageBox.textContent = "";
+        window.sessionStorage.removeItem(renderedCodeStorageKey);
       });
 
       copyButton.addEventListener("click", async () => {
