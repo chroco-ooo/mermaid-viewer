@@ -71,7 +71,6 @@
       const editorFullscreenButton = document.getElementById("editor-fullscreen");
       const previewFullscreenButton = document.getElementById("preview-fullscreen");
       const renderedCodeStorageKey = "mermaid-viewer:rendered-code";
-      const paneRatioStorageKey = "mermaid-viewer:editor-width-ratio";
       const minPaneRatio = 0.2;
       const maxPaneRatio = 0.8;
       const desktopMedia = window.matchMedia("(min-width: 1024px)");
@@ -106,15 +105,6 @@
         splitLayout.style.setProperty("--preview-pane-width", `${(1 - normalizedRatio) * 100}%`);
       };
 
-      const loadPaneRatio = () => {
-        const stored = Number(window.sessionStorage.getItem(paneRatioStorageKey));
-        return Number.isFinite(stored) ? clamp(stored, minPaneRatio, maxPaneRatio) : 1 / 3;
-      };
-
-      const savePaneRatio = (ratio) => {
-        window.sessionStorage.setItem(paneRatioStorageKey, String(clamp(ratio, minPaneRatio, maxPaneRatio)));
-      };
-
       const updateFullscreenLabel = () => {
         editorFullscreenButton.textContent = document.fullscreenElement === editorPanel ? "全画面終了" : "全画面";
         previewFullscreenButton.textContent = document.fullscreenElement === previewPanel ? "全画面終了" : "全画面";
@@ -142,7 +132,7 @@
         }
       };
 
-      applyPaneRatio(loadPaneRatio());
+      applyPaneRatio(1 / 2);
 
       const render = async () => {
         errorBox.textContent = "";
@@ -221,8 +211,6 @@
           splitHandle.removeEventListener("pointermove", onPointerMove);
           splitHandle.removeEventListener("pointerup", onPointerUp);
           splitHandle.removeEventListener("pointercancel", onPointerUp);
-          const ratio = parseFloat(splitLayout.style.getPropertyValue("--editor-pane-width")) / 100;
-          savePaneRatio(ratio);
         };
 
         splitHandle.addEventListener("pointermove", onPointerMove);
@@ -258,7 +246,7 @@
       <section
         id="split-layout"
         class="flex flex-col gap-4 lg:h-[40rem] lg:flex-row lg:gap-0"
-        style="--editor-pane-width: 33.333%; --preview-pane-width: 66.667%;"
+        style="--editor-pane-width: 50%; --preview-pane-width: 50%;"
       >
         <article
           id="editor-panel"
